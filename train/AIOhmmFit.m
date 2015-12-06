@@ -1,3 +1,4 @@
+
 %% Implementation of Autoregressive Input-Output HMM
 % Author: Ashesh Jain
 % Email: ashesh@cs.cornell.edu
@@ -20,6 +21,7 @@ end
 
 function model = mstep(gam,xi,expected,model,inputObs,data_original)
     %addpath ../minFunc;
+    addpath(genpath('../minFunc_2012/'));
     N = size(gam,2);
   
     data.inputObs = inputObs;
@@ -28,14 +30,22 @@ function model = mstep(gam,xi,expected,model,inputObs,data_original)
     data.xi = xi;
     data.gam = gam;
     
-    funcObj = @objective0;
-    funcGrad = @gradient0;
+    funcObj = @(parameters)completeObj0(parameters, data);
+    x0 = reshape(model.piW',model.inputDimension*(model.nstates-1),1);
     
-    [~,parameters] = minimizeFunc(funcObj,funcGrad,reshape(model.piW',model.inputDimension*(model.nstates-1),1),data);
+    %funcObj = @objective0;
+    %funcGrad = @gradient0;
+    
+    options.Method = 'lbfgs';
+    options.Display = 'none';
+    options.maxFunEvals = 500;
+    parameters = minFunc(funcObj, x0, options);
+    
+    %[~,parameters] = minimizeFunc(funcObj,funcGrad,reshape(model.piW',model.inputDimension*(model.nstates-1),1),data);
     model.piW = reshape(parameters,model.inputDimension,model.nstates-1)';
     
-    funcObj = @objective;
-    funcGrad = @gradient;
+    %funcObj = @objective;
+    %funcGrad = @gradient;
     
     nstates = model.nstates;
     inputDimension = model.inputDimension;
@@ -48,7 +58,10 @@ function model = mstep(gam,xi,expected,model,inputObs,data_original)
     end;
     
     parfor i = 1:model.nstates
-        [~,parameters] = minimizeFunc(funcObj,funcGrad,reshape(reshape(Wt{i},nstates-1,inputDimension)',inputDimension*(nstates-1),1),data_complete{i});
+        funcObj = @(parameters)completeObj(parameters, data_complete{i});
+        x0 = reshape(reshape(Wt{i},nstates-1,inputDimension)',inputDimension*(nstates-1),1);
+        parameters = minFunc(funcObj, x0, options);
+        %[~,parameters] = minimizeFunc(funcObj,funcGrad,reshape(reshape(Wt{i},nstates-1,inputDimension)',inputDimension*(nstates-1),1),data_complete{i});
         Wt{i} = reshape(parameters,inputDimension,nstates-1)';
     end;
 
@@ -265,6 +278,16 @@ function [v,Z] = normalize_local(v)
     %% Normalize the vector v
     Z = sum(v);
     v = v/Z;
+end
+
+function [obj, grad] = completeObj(w, data)
+    grad = gradient(w,data);
+    obj = objective(w,data);
+end
+
+function [obj, grad] = completeObj0(w, data)
+    grad = gradient0(w,data);
+    obj = objective0(w,data);
 end
 
 function grad = gradient(w,data)

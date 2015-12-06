@@ -1,4 +1,4 @@
-function model = initializeHMMmodel(type,nstates,ostates,iotype,istates)
+function model = initializeHMMmodel(train_data, type,nstates,ostates,iotype,istates)
     model.nstates = nstates;
     model.type = type;
     model.iotype = iotype;
@@ -17,6 +17,9 @@ function model = initializeHMMmodel(type,nstates,ostates,iotype,istates)
             model.mu{i} = rand(model.observationDimension,1);
             model.sigma{i} = (1.0/model.observationDimension)*eye(model.observationDimension,model.observationDimension); % rbfK(rand(),model.observationDimension);
         end;
+        %[mu, sigma] = getGMMinitialization(train_data, nstates);
+        %model.mu = mu;
+        %model.sigma = sigma;
     elseif strcmp(type,'gauss') && iotype
         model.observationDimension = ostates;
         model.inputDimension = istates;
@@ -24,9 +27,12 @@ function model = initializeHMMmodel(type,nstates,ostates,iotype,istates)
         model.W = rand(nstates,nstates-1,istates);
         for i = 1:model.nstates
             model.aparam{i} = [0.5 ; -0.5 ; 1.0 ; 0];
-            model.mu{i} = rand(model.observationDimension,1);
-            model.sigma{i} = (1.0/model.observationDimension)*eye(model.observationDimension,model.observationDimension); % rbfK(rand(),model.observationDimension);
+            %model.mu{i} = rand(model.observationDimension,1);
+            %model.sigma{i} = (1.0/model.observationDimension)*eye(model.observationDimension,model.observationDimension); % rbfK(rand(),model.observationDimension);
         end;
+        [mu, sigma] = getGMMinitialization(train_data, nstates);
+        model.mu = mu;
+        model.sigma = sigma;
     end;
 end
 

@@ -116,7 +116,7 @@ function IOhmmTrain()
                     model.nstates=6;
                 end;
 
-                model = initializeHMMmodel(model.type,model.nstates,model.observationDimension,model.iotype,model.inputDimension);
+                model = initializeHMMmodel(train_data, model.type,model.nstates,model.observationDimension,model.iotype,model.inputDimension);
                 %model.a = [0.5;-0.5;1.0;0];
                 model.a = [0;0;0;0];
                 model.action = action;

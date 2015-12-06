@@ -117,7 +117,7 @@ function AIOhmmTrain()
                     model.nstates=6;
                 end;
 
-                model = initializeHMMmodel(model.type,model.nstates,model.observationDimension,model.iotype,model.inputDimension);
+                model = initializeHMMmodel(train_data, model.type,model.nstates,model.observationDimension,model.iotype,model.inputDimension);
                 for k = 1:model.nstates
                     model.bparam{k} = (1.0/model.observationDimension)*zeros(model.observationDimension,1);
                 end;
