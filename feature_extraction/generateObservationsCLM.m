@@ -5,11 +5,11 @@ function generateObservationsCLM()
    
     %actions = {'lchange','rchange','end_action'};
     actions = {'lturn','rturn','lchange','rchange','end_action'};
-    observationDir = '../train/features';
+    observationDir = '../train/features/';
     feature_type = 16;
     delta_frames = 20;
     window_width = 20;
-    main_dir = '../new_params';
+    main_dir = '../new_params/';
     %failedCount = 1;
     %%
     for i = 1:size(actions,2)
