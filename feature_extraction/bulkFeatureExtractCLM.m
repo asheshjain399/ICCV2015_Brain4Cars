@@ -22,7 +22,7 @@ actions = {'lturn','rturn','lchange','rchange','end_action'};
 offset_frames = 50;
 delta_frames = 50;
 
-main_dir = '../param_files/';
+main_dir = '../new_params/';
 
 
 for i = 1:size(actions,2)
